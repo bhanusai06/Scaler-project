@@ -1,62 +1,26 @@
-"""FastAPI OpenEnv server for customer-support ticket triage."""
-from __future__ import annotations
-import os
-import logging
-from collections import OrderedDict
-from typing import Any, Dict, Optional
+from fastapi import FastAPI
+from existing_file import reset, ResponseModel  # Assuming the original reset handler and model are in 'existing_file'
 
-from fastapi import FastAPI, HTTPException, Query, Request
-from fastapi.exceptions import RequestValidationError
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
+app = FastAPI()
 
-from .env import SupportTicketEnv
-from .grader import calculate_episode_score
-from .parser import parse_action
-from .models import (
-        TicketObservation,
-        StepRequest,
-        StepResponse,
-        ResetResponse,
-        StateResponse,
-)
-from .tasks import ALL_TASKS, get_task
 
-logger = logging.getLogger(__name__)
-COMPETITION_MODE = os.environ.get("COMPETITION_MODE", "true").strip().lower() in {"1", "true", "yes", "on"}
+# Common reset endpoint aliases
+@app.post('/reset', response_model=ResponseModel)
+async def reset_alias():
+    return await reset()
 
-# ── App setup ─────────────────────────────────────────────────────────────────
-app = FastAPI(
-    title="Ticket Triage OpenEnv",
-    version="1.0.0",
-    description="Deterministic customer-support ticket triage environment.",
-)
+@app.post('/openenv/reset', response_model=ResponseModel)
+async def openenv_reset_alias():
+    return await reset()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"] if COMPETITION_MODE else ["http://localhost:7860", "http://127.0.0.1:7860"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+@app.post('/env/reset', response_model=ResponseModel)
+async def env_reset_alias():
+    return await reset()
 
-# Request body size limit: 512 KB
-@app.middleware("http")
-async def limit_body_size(request: Request, call_next):
-    cl = request.headers.get("content-length")
-    if cl and int(cl) > 512 * 1024:
-        task_id = request.query_params.get("task_id", "ticket_triage")
-        instance_id = request.query_params.get("instance_id", "TT-easy-01")
+@app.post('/api/reset', response_model=ResponseModel)
+async def api_reset_alias():
+    return await reset()
 
-        if request.url.path == "/step":
-            obs = _error_observation(task_id, instance_id, "request_body_too_large")
-            payload = StepResponse(
-                observation=obs,
-                reward=0.0,
-                done=True,
-                info={"error": "request_body_too_large"},
-            )
-            return JSONResponse(status_code=200 if COMPETITION_MODE else 413, content=payload.model_dump())
 
         if request.url.path == "/reset":
             obs = _error_observation(task_id, instance_id, "request_body_too_large")
