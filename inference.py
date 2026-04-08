@@ -15,8 +15,11 @@ from openai import OpenAI
 
 random.seed(42)
 
-API_BASE_URL = os.environ.get("API_BASE_URL", "https://api.openai.com/v1")
-MODEL_NAME = os.environ.get("MODEL_NAME", "gpt-4o-mini")
+HF_SPACE_URL = os.environ.get("HF_SPACE_URL", "https://huggingface.co/spaces/huggingface-projects/llama-2-7b-chat")
+# HF_SPACE_URL identifies which Hugging Face Space backs this deployment;
+# used for display/reference — inference calls go via API_BASE_URL + HF_TOKEN.
+API_BASE_URL = os.environ.get("API_BASE_URL", "https://router.huggingface.co/v1")
+MODEL_NAME = os.environ.get("MODEL_NAME", "meta-llama/Llama-2-7b-chat-hf")
 HF_TOKEN = os.environ.get("HF_TOKEN")
 LOCAL_IMAGE_NAME = os.environ.get("LOCAL_IMAGE_NAME", None)
 ENV_BASE_URL = os.environ.get("ENV_BASE_URL", "http://localhost:7860")

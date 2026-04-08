@@ -85,20 +85,25 @@ Compatibility endpoints:
 5. `ENV_BASE_URL` default `http://localhost:7860`
 6. `COMPETITION_MODE` default `true`
 
-## Hugging Face API Link
+## Hugging Face Space
 
-This project uses OpenAI-compatible client calls. To run against Hugging Face Router, set:
+This project uses the **llama-2-7b-chat** Hugging Face Space as the LLM backend:
 
-1. `API_BASE_URL=https://router.huggingface.co/v1`
-2. `HF_TOKEN=<your_huggingface_token>`
-3. `MODEL_NAME=<huggingface_model_id>`
+**Space URL:** https://huggingface.co/spaces/huggingface-projects/llama-2-7b-chat
+
+The inference client connects via HF Router (OpenAI-compatible API). Set your `HF_TOKEN` at runtime to enable LLM calls:
+
+1. `HF_SPACE_URL=https://huggingface.co/spaces/huggingface-projects/llama-2-7b-chat`
+2. `API_BASE_URL=https://router.huggingface.co/v1`
+3. `HF_TOKEN=<your_huggingface_token>`
+4. `MODEL_NAME=meta-llama/Llama-2-7b-chat-hf`
 
 Example (PowerShell):
 
 ```powershell
 $env:API_BASE_URL="https://router.huggingface.co/v1"
 $env:HF_TOKEN="hf_xxx"
-$env:MODEL_NAME="openai/gpt-oss-120b"
+$env:MODEL_NAME="meta-llama/Llama-2-7b-chat-hf"
 python inference.py
 ```
 
