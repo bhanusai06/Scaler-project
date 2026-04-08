@@ -176,7 +176,27 @@ async def reset(
 
     obs = env.reset()
     return ResetResponse(observation=obs)
+@app.post("/openenv/reset", response_model=ResetResponse)
+async def reset_openenv_alias(task_id: str = Query(default="ticket_triage"),
+                              instance_id: str = Query(default="TT-easy-01")):
+    return await reset(task_id=task_id, instance_id=instance_id)
 
+@app.post("/env/reset", response_model=ResetResponse)
+async def reset_env_alias(task_id: str = Query(default="ticket_triage"),
+                          instance_id: str = Query(default="TT-easy-01")):
+    return await reset(task_id=task_id, instance_id=instance_id)
+
+@app.post("/api/reset", response_model=ResetResponse)
+async def reset_api_alias(task_id: str = Query(default="ticket_triage"),
+                          instance_id: str = Query(default="TT-easy-01")):
+    return await reset(task_id=task_id, instance_id=instance_id)
+
+@app.options("/reset")
+@app.options("/openenv/reset")
+@app.options("/env/reset")
+@app.options("/api/reset")
+async def reset_options():
+    return JSONResponse(status_code=200, content={"ok": True})
 
 @app.post("/step", response_model=StepResponse)
 async def step(
