@@ -142,20 +142,21 @@ docker run --rm ticket-triage-openenv python inference.py
 
 ## Validation
 
-Run full validation:
+Compile-check project:
 
 ```powershell
-python validator.py
+python -m py_compile app/models.py app/parser.py app/tasks.py app/grader.py app/env.py app/api.py inference.py
 ```
 
-Validate OpenEnv manifest only:
+Quick API probe (after starting app.py):
 
 ```powershell
-python validate_openenv_yaml.py
+Invoke-WebRequest -Uri "http://127.0.0.1:7860/health" -UseBasicParsing
+Invoke-WebRequest -Uri "http://127.0.0.1:7860/tasks" -UseBasicParsing
 ```
 
-Verify log format:
+Generate inference logs:
 
 ```powershell
-python verify_log_format.py output.log
+python inference.py > output.log
 ```

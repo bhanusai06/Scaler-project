@@ -248,14 +248,17 @@ async def debug(
             "instance_id": instance_id,
             "step_count": 0,
             "is_terminal": True,
-            "total_thrust": 0.0,
-            "steps_in_band": None,
-            "best_distance": None,
+            "status": "open",
+            "repeated_errors": 0,
+            "delay_penalty_acc": 0.0,
             "trajectory_length": 0,
+            "ticket_id": "invalid",
+            "last_action": None,
             "error": "unknown_task_or_instance",
         }
 
     ep  = env.episode
+    last_action = ep.trajectory[-1]["action"] if ep.trajectory else None
     return {
         "task_id":      env.spec.task_id,
         "instance_id":  env.spec.instance_id,
@@ -266,9 +269,7 @@ async def debug(
         "delay_penalty_acc": round(ep.delay_penalty_acc, 6),
         "trajectory_length": len(ep.trajectory),
         "ticket_id": ep.ticket_id,
-        "current_category": ep.category,
-        "current_priority": ep.priority,
-        "current_department": ep.department,
+        "last_action": last_action,
     }
 
 
