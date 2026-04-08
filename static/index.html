@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity OpenEnv Console</title>
+    <meta name="description" content="Local debug console for antigravity OpenEnv.">
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-left">
+            <h1>Antigravity <span class="sub">OpenEnv Console</span></h1>
+            <div class="status-badge" id="current-status">READY</div>
+        </div>
+        <div class="header-right">
+            <div class="task-control">
+                <label for="task-id-select">Task Instance:</label>
+                <select id="task-id-select"></select>
+            </div>
+            <button id="reset-btn" class="btn btn-danger">Reset</button>
+            <button id="refresh-btn" class="btn btn-secondary">Refresh</button>
+        </div>
+    </header>
+
+    <div class="perf-bar" id="perf-bar">
+        <span>Last API: <b id="perf-latency">-</b> ms</span>
+        <span>Steps: <b id="perf-steps">0</b> / <b id="perf-maxsteps">-</b></span>
+        <span>Last Reward: <b id="perf-avg">-</b></span>
+        <span id="terminal-badge" class="hidden">TERMINAL</span>
+    </div>
+
+    <main class="debug-grid">
+        <section class="panel" id="observation-panel">
+            <div class="panel-header">
+                <h2>Observation</h2>
+                <span class="step-counter">Step <b id="step-count">0</b></span>
+            </div>
+            <div class="panel-body">
+                <pre id="observation-json" class="json-viewer">{}</pre>
+            </div>
+        </section>
+
+        <section class="panel" id="action-panel">
+            <div class="panel-header">
+                <h2>Action Input</h2>
+            </div>
+            <div class="panel-body">
+                <form id="action-form">
+                    <div class="form-group">
+                        <label for="input-action">Action (float in [-1.0, 1.0])</label>
+                        <input type="number" id="input-action" min="-1" max="1" step="0.01" value="0.0" autocomplete="off">
+                    </div>
+                    <button type="submit" id="submit-btn" class="btn btn-primary">Submit Step</button>
+                    <div id="terminal-notice" class="terminal-notice hidden">
+                        Episode terminated. Reset to start a new episode.
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section class="panel" id="output-panel">
+            <div class="panel-header">
+                <h2>Step Result</h2>
+            </div>
+            <div class="panel-body">
+                <h3>Reward</h3>
+                <div class="score-display" id="score-val">-</div>
+                <h3>Done</h3>
+                <div class="feedback-box" id="feedback-val">-</div>
+                <h3>Debug Info</h3>
+                <pre id="debug-json" class="json-viewer small">{}</pre>
+            </div>
+        </section>
+    </main>
+
+    <section class="timeline-section">
+        <div class="timeline-header">
+            <h2>Timeline</h2>
+            <button id="clear-timeline-btn" class="btn btn-secondary btn-sm">Clear</button>
+        </div>
+        <div id="timeline-container" class="timeline-container">
+            <div class="timeline-empty">No steps yet. Reset and submit an action.</div>
+        </div>
+    </section>
+
+    <div id="toast" class="toast" role="alert" aria-live="polite">Message</div>
+
+    <script src="/static/script.js?v=3"></script>
+</body>
+</html>

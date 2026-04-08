@@ -1,0 +1,64 @@
+name: "Ticket Triage OpenEnv"
+version: "1.0.0"
+description: "Production-style customer support ticket triage, routing, and resolution workflow."
+
+observation_space:
+  type: object
+  properties:
+    ticket_id: { type: string }
+    task_id: { type: string }
+    instance_id: { type: string }
+    customer_message: { type: string }
+    customer_tier: { type: string, enum: [standard, pro, enterprise] }
+    urgency_hint: { type: string, enum: [low, medium, high] }
+    step_count: { type: integer, minimum: 0 }
+    status: { type: string, enum: [open, in_progress, resolved, escalated] }
+    previous_actions: { type: array }
+    done: { type: boolean }
+    info: { type: object }
+
+action_space:
+  type: object
+  properties:
+    action:
+      type: object
+      properties:
+        category: { type: string, enum: [billing, technical, account, abuse, other] }
+        priority: { type: string, enum: [low, medium, high, critical] }
+        department: { type: string, enum: [billing_ops, tech_support, trust_safety, account_ops, customer_success] }
+        response_message: { type: string, minLength: 1, maxLength: 600 }
+        resolve: { type: boolean }
+        escalate: { type: boolean }
+      required: [category, priority, department, response_message, resolve, escalate]
+
+reward_spec:
+  type: float
+  range: [0.0, 1.0]
+  formula: "reward = clamp(base_score - action_cost - delay_penalty - consistency_penalty, 0.0, 1.0)"
+  base_components:
+    category: 0.30
+    priority: 0.20
+    department: 0.20
+    response_quality: 0.20
+    resolution: 0.10
+
+api:
+  port: 7860
+  endpoints:
+    health: "GET /health"
+    reset: "POST /reset"
+    step: "POST /step"
+    state: "GET /state"
+
+tasks:
+  - task_id: ticket_triage
+    instances: [TT-easy-01, TT-medium-01, TT-hard-01, TT-extreme-01]
+    difficulty_progression: [easy, medium, hard, extreme]
+
+deployment:
+  server_cmd: "python app.py"
+  entry_point: "inference.py"
+  runtime:
+    cpu: 2
+    memory_gb: 8
+    max_runtime_min: 20
